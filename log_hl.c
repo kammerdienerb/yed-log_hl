@@ -88,6 +88,9 @@ int yed_plugin_boot(yed_plugin *self) {
 
 
     SYN();
+        APUSH("&attention");
+            RANGE("\\[!]"); ONELINE(); ENDRANGE("$");
+        APOP();
         APUSH("&code-number");
             RANGE("^\\[");  ONELINE(); ENDRANGE("]");
         APOP();
@@ -97,9 +100,6 @@ int yed_plugin_boot(yed_plugin *self) {
         APUSH("&code-string");
             RANGE("\"");    ONELINE(); ENDRANGE("\"");
             RANGE("'");     ONELINE(); ENDRANGE("'");
-        APOP();
-        APUSH("&attention");
-            RANGE("\\[!]"); ONELINE(); ENDRANGE("$");
         APOP();
     ENDSYN();
 
@@ -177,8 +177,7 @@ void log_hl_hl_cmds(yed_event *event) {
         word_cpy = strndup(word, word_len);
         if (!!yed_get_command(word_cpy)) {
             for (i = 0; i < word_len; i += 1) {
-                attr = array_item(event->line_attrs, old_col + i - 1);
-                yed_combine_attrs(attr, &cal);
+                yed_eline_combine_col_attrs(event, old_col + i, &cal);
             }
         }
         free(word_cpy);
